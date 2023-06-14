@@ -29,7 +29,7 @@ use Depthbomb\CsrfBundle\Attribute\CsrfProtected;
 class MyController extends AbstractController
 {
     // ...
-    
+
     #[CsrfProtected('my token')] // protect specific actions
     public function myAction(): Response
     {
@@ -55,5 +55,4 @@ A token can be sent with a request in two ways:
 
 ---
 
-> **Info**
-> This is my first Symfony bundle (and Composer package). The bundle may or may not be implemented correctly as I had issues finding exactly the right and current way to create a bundle. Do let me know (via an issue or PR) if there is anything that should be done another way.
+This is my first Symfony bundle (and Composer package). The bundle may or may not be implemented correctly as I had issues finding exactly the right and current way to create a bundle. Do let me know (via an issue or PR) if there is anything that should be done another way.
