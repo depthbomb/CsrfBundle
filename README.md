@@ -1,6 +1,6 @@
 # CsrfBundle
 
-[![Downloads](https://img.shields.io/packagist/dm/depthbomb/csrf-bundle)](https://packagist.org/packages/depthbomb/csrf-bundle)
+[![Downloads](https://img.shields.io/packagist/dt/depthbomb/csrf-bundle)](https://packagist.org/packages/depthbomb/csrf-bundle)
 
 This is a simple bundle built on top of Symfony's security package that allows you to easily protect any controller or individual controller action with a CSRF token check.
 
