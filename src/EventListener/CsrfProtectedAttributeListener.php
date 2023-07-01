@@ -15,8 +15,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class CsrfProtectedAttributeListener implements EventSubscriberInterface
 {
-    private const CSRF_TOKEN_FIELD  = '_csrf_token';
-    private const CSRF_TOKEN_HEADER = 'X-Csrf-Token';
+    private const CSRF_TOKEN_FIELD       = '_csrf_token';
+    private const CSRF_TOKEN_QUERY_PARAM = 'token';
+    private const CSRF_TOKEN_HEADER      = 'X-Csrf-Token';
 
     public function __construct(private readonly CsrfTokenManagerInterface $tokenManager) {}
 
@@ -57,23 +58,19 @@ class CsrfProtectedAttributeListener implements EventSubscriberInterface
 
     private function getTokenFromRequest(Request $request): ?string
     {
-        if ($request->getContent() !== '')
+        $payload = $request->getPayload();
+        if ($payload->has($this::CSRF_TOKEN_FIELD))
         {
-            $payload = $request->getPayload();
-            if ($payload->has($this::CSRF_TOKEN_FIELD))
-            {
-                return $payload->get($this::CSRF_TOKEN_FIELD);
-            }
+            return $payload->getString($this::CSRF_TOKEN_FIELD);
+        }
+
+        $query = $request->query;
+        if ($query->has($this::CSRF_TOKEN_QUERY_PARAM))
+        {
+            return $query->getString($this::CSRF_TOKEN_QUERY_PARAM);
         }
 
         $headers = $request->headers;
-        $token   = null;
-
-        if ($headers->has($this::CSRF_TOKEN_HEADER))
-        {
-            $token = $headers->get($this::CSRF_TOKEN_HEADER);
-        }
-
-        return $token;
+        return $headers->get($this::CSRF_TOKEN_HEADER);
     }
 }

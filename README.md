@@ -48,11 +48,13 @@ And that's it! Controllers/actions that are protected with the attribute are che
 
 ## Sending tokens with requests
 
-A token can be sent with a request in two ways:
+A token can be sent with a request in a few ways:
 
 - Included in a `X-Csrf-Token` header
 - Included in the request payload as `_csrf_token`
+- Included as a `token` query string (`?token=xxx`)
 
 ---
 
-This is my first Symfony bundle (and Composer package). The bundle may or may not be implemented correctly as I had issues finding exactly the right and current way to create a bundle. Do let me know (via an issue or PR) if there is anything that should be done another way.
+> **Note**
+> This is my first Symfony bundle (and Composer package). The bundle may or may not be implemented correctly as I had issues finding exactly the right and current way to create a bundle. Do let me know (via an issue or PR) if there is anything that should be done another way.
