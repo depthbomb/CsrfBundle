@@ -38,10 +38,16 @@ class MyController extends AbstractController
 }
 ```
 
-You can then generate a CSRF token using `CsrfTokenManagerInterface`:
+You can then generate a CSRF token using your preferred method:
 
 ```php
-$my_token = $this->tokenManager->getToken('my token')->getValue();
+// in a service/controller
+$my_token = $this->tokenManager->getToken('my token');
+```
+
+```injectablephp
+{# in Twig templates #}
+{{ csrf_token('my token') }}
 ```
 
 And that's it! Controllers/actions that are protected with the attribute are checked for token validity early in the event chain. When an action requires a token and one isn't provided (see below) then an `HttpException` is thrown with HTTP error code `428`. If a token is provided for a protected action and the token is invalid then an `HttpException` is thrown with a `412`.
