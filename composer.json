@@ -16,7 +16,7 @@
         "symfony/config": "6.3.*",
         "symfony/dependency-injection": "6.3.*",
         "symfony/event-dispatcher": "6.3.*",
-        "symfony/http-foundation": "6.3.*",
+        "symfony/http-foundation": "6.4.*",
         "symfony/http-kernel": "6.3.*",
         "symfony/security-csrf": "6.3.*"
     },
