@@ -1,7 +1,7 @@
 {
     "name": "depthbomb/csrf-bundle",
     "description": "Simple CSRF protection for Symfony routes",
-    "version": "1.1.0",
+    "keywords": ["csrf", "security", "symfony", "bundle"],
     "license": "MIT",
     "authors": [
         {
@@ -9,26 +9,55 @@
         }
     ],
     "type": "symfony-bundle",
+    "support": {
+        "issues": "https://github.com/depthbomb/CsrfBundle/issues",
+        "source": "https://github.com/depthbomb/CsrfBundle"
+    },
     "require": {
-        "php": ">=8.1"
+        "php": ">=8.1",
+        "symfony/config": "^6.4 || ^7.4 || ^8.1",
+        "symfony/dependency-injection": "^6.4 || ^7.4 || ^8.1",
+        "symfony/event-dispatcher": "^6.4 || ^7.4 || ^8.1",
+        "symfony/http-foundation": "^6.4 || ^7.4 || ^8.1",
+        "symfony/http-kernel": "^6.4 || ^7.4 || ^8.1",
+        "symfony/security-csrf": "^6.4 || ^7.4 || ^8.1"
     },
     "require-dev": {
-        "symfony/config": "6.3.*",
-        "symfony/dependency-injection": "6.3.*",
-        "symfony/event-dispatcher": "6.3.*",
-        "symfony/http-foundation": "6.3.*",
-        "symfony/http-kernel": "6.3.*",
-        "symfony/security-csrf": "6.3.*"
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^10.5 || ^11.5 || ^12.0 || ^13.0",
+        "symfony/framework-bundle": "^6.4 || ^7.4 || ^8.1"
     },
     "autoload": {
         "psr-4": {
             "Depthbomb\\CsrfBundle\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Depthbomb\\CsrfBundle\\Tests\\": "tests/"
+        }
+    },
+    "archive": {
+        "exclude": [
+            "/.*",
+            "/composer.lock",
+            "/phpstan*",
+            "/phpunit*",
+            "/tests",
+            "/vendor"
+        ]
+    },
+    "scripts": {
+        "test": "@php tests/run.php",
+        "analyse": "@php vendor/phpstan/phpstan/phpstan analyse --no-progress",
+        "check": [
+            "@composer validate --strict",
+            "@test",
+            "@analyse"
+        ]
+    },
     "config": {
         "preferred-install": "dist",
         "sort-packages": true
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    }
 }

@@ -1,4 +1,8 @@
-<?php namespace Depthbomb\CsrfBundle\EventListener;
+<?php
+
+declare(strict_types=1);
+
+namespace Depthbomb\CsrfBundle\EventListener;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Csrf\CsrfToken;
@@ -15,10 +19,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class CsrfProtectedAttributeListener implements EventSubscriberInterface
 {
-    private const CSRF_TOKEN_FIELD       = '_csrf_token';
-    private const CSRF_TOKEN_QUERY_PARAM = 'token';
-    private const CSRF_TOKEN_HEADER      = 'X-Csrf-Token';
-
     public function __construct(private readonly CsrfTokenManagerInterface $tokenManager) {}
 
     public static function getSubscribedEvents(): array
@@ -28,49 +28,58 @@ class CsrfProtectedAttributeListener implements EventSubscriberInterface
 
     public function onController(ControllerEvent $event): void
     {
+        // Symfony returns class attributes before method attributes. Preserve that precedence.
         $attributes = $event->getAttributes();
-
-        /** @var ?CsrfProtected $token_attr */
-        $token_attr = $attributes[CsrfProtected::class][0] ?? null;
-        if (!$token_attr)
+        /** @var CsrfProtected|null $attribute */
+        $attribute = $attributes[CsrfProtected::class][0] ?? null;
+        if ($attribute === null)
         {
             return;
         }
 
-        $request  = $event->getRequest();
-        $token    = $this->getTokenFromRequest($request);
-        $token_id = $token_attr->tokenId;
-
-        if (!$token)
+        $request = $event->getRequest();
+        if ($attribute->methods !== [] && !in_array($request->getMethod(), $attribute->methods, true))
         {
-            $code = Response::HTTP_PRECONDITION_REQUIRED;
-        }
-        elseif (!$this->tokenManager->isTokenValid(new CsrfToken($token_id, $token)))
-        {
-            $code = Response::HTTP_PRECONDITION_FAILED;
+            return;
         }
 
-        if (isset($code))
+        $token = $this->getTokenFromRequest($request, $attribute);
+        if ($token === null || $token === '')
         {
-            throw new HttpException($code, Response::$statusTexts[$code]);
+            throw new HttpException(Response::HTTP_PRECONDITION_REQUIRED, 'Precondition Required');
+        }
+
+        if (!$this->tokenManager->isTokenValid(new CsrfToken($attribute->tokenId, $token)))
+        {
+            throw new HttpException(Response::HTTP_PRECONDITION_FAILED, 'Precondition Failed');
         }
     }
 
-    private function getTokenFromRequest(Request $request): ?string
+    private function getTokenFromRequest(Request $request, CsrfProtected $attribute): ?string
     {
-        $payload = $request->getPayload();
-        if ($payload->has($this::CSRF_TOKEN_FIELD))
+        if ($attribute->tokenField !== null)
         {
-            return $payload->getString($this::CSRF_TOKEN_FIELD);
+            // Read parsed form data directly, without getPayload() cloning the bag.
+            if ($request->request->has($attribute->tokenField))
+            {
+                return $request->request->getString($attribute->tokenField);
+            }
+
+            if ($request->request->count() === 0 && $request->getContent() !== '')
+            {
+                $payload = $request->getPayload();
+                if ($payload->has($attribute->tokenField))
+                {
+                    return $payload->getString($attribute->tokenField);
+                }
+            }
         }
 
-        $query = $request->query;
-        if ($query->has($this::CSRF_TOKEN_QUERY_PARAM))
+        if ($attribute->queryParameter !== null && $request->query->has($attribute->queryParameter))
         {
-            return $query->getString($this::CSRF_TOKEN_QUERY_PARAM);
+            return $request->query->getString($attribute->queryParameter);
         }
 
-        $headers = $request->headers;
-        return $headers->get($this::CSRF_TOKEN_HEADER);
+        return $attribute->header === null ? null : $request->headers->get($attribute->header);
     }
 }

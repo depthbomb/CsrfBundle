@@ -1,4 +1,8 @@
-<?php namespace Depthbomb\CsrfBundle\DependencyInjection;
+<?php
+
+declare(strict_types=1);
+
+namespace Depthbomb\CsrfBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -15,13 +19,16 @@ use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
  */
 class CsrfBundleExtension extends ConfigurableExtension implements ConfigurationInterface
 {
+    /**
+     * @param array<mixed> $config
+     */
     public function getConfiguration(array $config, ContainerBuilder $container): ?ConfigurationInterface
     {
         return $this;
     }
 
     /**
-     * @inheritDoc
+     * @param array<string, mixed> $mergedConfig
      */
     protected function loadInternal(array $mergedConfig, ContainerBuilder $container): void
     {

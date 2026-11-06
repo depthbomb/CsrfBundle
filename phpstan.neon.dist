@@ -1,0 +1,8 @@
+includes:
+    - tests/phpstan-cache.php
+
+parameters:
+    level: max
+    paths:
+        - src
+    phpVersion: 80100
