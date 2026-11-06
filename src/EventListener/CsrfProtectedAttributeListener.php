@@ -60,18 +60,20 @@ class CsrfProtectedAttributeListener implements EventSubscriberInterface
         if ($attribute->tokenField !== null)
         {
             // Read parsed form data directly, without getPayload() cloning the bag.
-            if ($request->request->has($attribute->tokenField))
-            {
-                return $request->request->getString($attribute->tokenField);
-            }
-
-            if ($request->request->count() === 0 && $request->getContent() !== '')
+            $payload = $request->request;
+            $values = $payload->all();
+            if ($values === [] && $request->getContent() !== '')
             {
                 $payload = $request->getPayload();
-                if ($payload->has($attribute->tokenField))
-                {
-                    return $payload->getString($attribute->tokenField);
-                }
+                $values = $payload->all();
+            }
+
+            if (array_key_exists($attribute->tokenField, $values))
+            {
+                $token = $values[$attribute->tokenField];
+
+                // Keep Symfony's scalar conversion and rejection of array/object inputs.
+                return is_string($token) ? $token : $payload->getString($attribute->tokenField);
             }
         }
 
